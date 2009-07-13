@@ -3,7 +3,7 @@ from django.db import models
 class Card(models.Model):
     title = models.CharField(max_length=80)
     board = models.ForeignKey("Board", related_name="cards")
-    step = models.ForeignKey("Step", related_name="cards")
+    phase = models.ForeignKey("Phase", related_name="cards")
     order = models.SmallIntegerField() #Order is within a step, steps are pegged to a board
     
     #Optional fields
@@ -20,9 +20,9 @@ class Board(models.Model):
     #Optional fields
     description = models.TextField(blank=True)
 
-class Step(models.Model):
+class Phase(models.Model):
     title = models.CharField(max_length=80)
-    board = models.ForeignKey("Board", related_name="steps")
+    board = models.ForeignKey("Board", related_name="phases")
 
     #Optional fields
     description = models.TextField(blank=True)
