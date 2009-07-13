@@ -25,10 +25,10 @@ class Board(models.Model):
 
 class Phase(models.Model):
     CHOICES = (
-        'backlog', 'Backlog',
-        'progress', 'In progress',
-        'done', 'Done',
-        'archive', 'Archive',
+        ('backlog', 'Backlog'),
+        ('progress', 'In progress'),
+        ('done', 'Done'),
+        ('archive', 'Archive'),
     )
     title = models.CharField(max_length=80)
     board = models.ForeignKey("Board", related_name="phases")
