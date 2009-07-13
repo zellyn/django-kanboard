@@ -14,6 +14,7 @@ class Card(models.Model):
     color = models.CharField(max_length=7, blank=True) #For #003399 style css colors
     ready = models.BooleanField()
     blocked = models.BooleanField()
+    blocked_because = models.TextField(blank=True)
 
 class Board(models.Model):
     title = models.CharField(max_length=80)
