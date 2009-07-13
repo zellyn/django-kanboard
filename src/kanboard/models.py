@@ -32,9 +32,10 @@ class Phase(models.Model):
     )
     title = models.CharField(max_length=80)
     board = models.ForeignKey("Board", related_name="phases")
+    order = models.SmallIntegerField() #Order is within a board
 
     #Optional fields
     description = models.TextField(blank=True)
     limit = models.SmallIntegerField(blank=True, null=True)
-    phase_type = models.CharField(max_length=25, choices=CHOICES) #We'll need to know if a phase is WIP or not for stats calculation
+    type = models.CharField(max_length=25, choices=CHOICES) #We'll need to know if a phase is WIP or not for stats calculation
 
