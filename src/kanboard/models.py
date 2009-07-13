@@ -1,6 +1,6 @@
-import datetime
-
 from django.db import models
+
+from kanboard.signals import set_backlogged_at
 
 class Card(models.Model):
     title = models.CharField(max_length=80)
@@ -18,7 +18,7 @@ class Card(models.Model):
     blocked = models.BooleanField()
     blocked_because = models.TextField(blank=True)
 
-    #TODO: need to auto populate backlogged_at
+models.signals.pre_save.connect(set_backlogged_at, sender=Card)
 
 class Board(models.Model):
     title = models.CharField(max_length=80)

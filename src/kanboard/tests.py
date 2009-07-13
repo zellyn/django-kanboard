@@ -34,7 +34,7 @@ class KanboardTestCase(TestCase):
         if save:
             self.assert_(c.title)
             self.assert_(c.phase)
-            self.assert_(c.order)
+            self.assertNotEqual(None, c.order) #Because order can be 0
         return c
 
     def create_phase(self, save=True, **kwargs):
@@ -48,7 +48,9 @@ class KanboardTestCase(TestCase):
             }
         p = self.create_object(Phase, save, kwargs)
         if save:
-            pass
+            self.assert_(p.title)
+            self.assert_(p.board)
+            self.assertNotEqual(None, p.order)
         return p
 
     def create_object(self, klass, save=True, kwargs={}):
