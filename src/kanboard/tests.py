@@ -5,7 +5,7 @@ from kanboard.models import Board, Card, Phase
 
 class KanboardTestCase(TestCase):
     def random_int(self):
-        return random.randint(1, 100)
+        return random.randint(1, 1000)
 
     def create_board(self, save=True, **kwargs):
         if not kwargs:
@@ -21,6 +21,36 @@ class KanboardTestCase(TestCase):
             self.assert_(b.slug)
         return b
 
+    def create_card(self, save=True, **kwargs):
+        if not kwargs:
+            index = self.random_int()
+            phase = self.create_phase()
+            kwargs = {
+                'title': 'Card %s' % index,
+                'phase': phase,
+                'order': 0,
+            }
+        c = self.create_object(Card, save, kwargs)
+        if save:
+            self.assert_(c.title)
+            self.assert_(c.phase)
+            self.assert_(c.order)
+        return c
+
+    def create_phase(self, save=True, **kwargs):
+        if not kwargs:
+            index = self.random_int()
+            board = self.create_board()
+            kwargs = {
+                'title': 'Phase %s' % index,
+                'board': board,
+                'order': 0,
+            }
+        p = self.create_object(Phase, save, kwargs)
+        if save:
+            pass
+        return p
+
     def create_object(self, klass, save=True, kwargs={}):
         o = klass(**kwargs) 
         if save:
@@ -28,8 +58,18 @@ class KanboardTestCase(TestCase):
             self.assert_(o.id, "Unable to save %s" % o)
         return o
 
+
 class KanboardTests(KanboardTestCase):
     def test_create(self):
+        """
+        Ensure that our convenience methods are actually working.
+        """
         b = self.create_board()
         self.assert_(b.id)
+
+        c = self.create_card()
+        self.assert_(c.id)
+
+        p = self.create_phase()
+        self.assert_(p.id)
 
