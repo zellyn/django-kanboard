@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 
 class Card(models.Model):
@@ -24,18 +26,23 @@ class Board(models.Model):
     description = models.TextField(blank=True)
 
 class Phase(models.Model):
+    BACKLOG = 'backlog'
+    PROGRESS = 'progress'
+    DONE = 'done'
+    ARCHIVE = 'archive'
     CHOICES = (
-        ('backlog', 'Backlog'),
-        ('progress', 'In progress'),
-        ('done', 'Done'),
-        ('archive', 'Archive'),
+        (BACKLOG, 'Backlog'),
+        (PROGRESS, 'In progress'),
+        (DONE, 'Done'),
+        (ARCHIVE, 'Archive'),
     )
+
     title = models.CharField(max_length=80)
     board = models.ForeignKey("Board", related_name="phases")
     order = models.SmallIntegerField() #Order is within a board
+    type = models.CharField(max_length=25, choices=CHOICES, default=PROGRESS) #We'll need to know if a phase is WIP or not for stats calculation
 
     #Optional fields
     description = models.TextField(blank=True)
     limit = models.SmallIntegerField(blank=True, null=True)
-    type = models.CharField(max_length=25, choices=CHOICES) #We'll need to know if a phase is WIP or not for stats calculation
 
