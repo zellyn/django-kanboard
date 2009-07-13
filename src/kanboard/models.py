@@ -18,6 +18,8 @@ class Card(models.Model):
     blocked = models.BooleanField()
     blocked_because = models.TextField(blank=True)
 
+    #TODO: need to auto populate backlogged_at
+
 class Board(models.Model):
     title = models.CharField(max_length=80)
     slug = models.SlugField()
