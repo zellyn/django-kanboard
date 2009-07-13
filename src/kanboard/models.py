@@ -24,12 +24,17 @@ class Board(models.Model):
     description = models.TextField(blank=True)
 
 class Phase(models.Model):
+    CHOICES = (
+        'backlog', 'Backlog',
+        'progress', 'In progress',
+        'done', 'Done',
+        'archive', 'Archive',
+    )
     title = models.CharField(max_length=80)
     board = models.ForeignKey("Board", related_name="phases")
 
     #Optional fields
     description = models.TextField(blank=True)
     limit = models.SmallIntegerField(blank=True, null=True)
-        
-
+    phase_type = models.CharField(max_length=25, choices=CHOICES) #We'll need to know if a phase is WIP or not for stats calculation
 
