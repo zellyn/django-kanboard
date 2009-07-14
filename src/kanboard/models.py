@@ -1,6 +1,6 @@
 from django.db import models
 
-from kanboard.signals import set_backlogged_at
+from kanboard.signals import set_backlogged_at, create_default_phases
 
 class Card(models.Model):
     title = models.CharField(max_length=80)
@@ -26,6 +26,7 @@ class Board(models.Model):
 
     #Optional fields
     description = models.TextField(blank=True)
+models.signals.post_save.connect(create_default_phases, sender=Board)
 
 class Phase(models.Model):
     BACKLOG = 'backlog'

@@ -62,6 +62,9 @@ class KanboardTestCase(TestCase):
 
 
 class KanboardTests(KanboardTestCase):
+    def setUp(self):
+        self.board = self.create_board()
+
     def test_create(self):
         """
         Ensure that our convenience methods are actually working.
@@ -75,3 +78,10 @@ class KanboardTests(KanboardTestCase):
         p = self.create_phase()
         self.assert_(p.id)
 
+    def test_board_auto_phases(self):
+        """
+        A board, when created, should automatically have
+        backlog, progress, done, and archive phases created as defaults.
+        """
+        b = self.create_board()
+        self.assertEqual(4, len(b.phases.all()))
