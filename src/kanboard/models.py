@@ -26,8 +26,30 @@ class Board(models.Model):
 
     #Optional fields
     description = models.TextField(blank=True)
+
+    @property
+    def backlog(self):
+        try:
+            return Phase.objects.get(board=self, type=Phase.BACKLOG)
+        except Phase.DoesNotExist:
+            return none
+    @property
+    def done(self):
+        try:
+            return Phase.objects.get(board=self, type=Phase.DONE)
+        except Phase.DoesNotExist:
+            return None
+
+    @property
+    def archive(self):
+        try:
+            return Phase.objects.get(board=self, type=Phase.ARCHIVE)
+        except Phase.DoesNotExist:
+            return None
+
 models.signals.post_save.connect(create_default_phases, sender=Board)
 
+    
 class Phase(models.Model):
     BACKLOG = 'backlog'
     PROGRESS = 'progress'
@@ -48,4 +70,5 @@ class Phase(models.Model):
     #Optional fields
     description = models.TextField(blank=True)
     limit = models.SmallIntegerField(blank=True, null=True)
+
 

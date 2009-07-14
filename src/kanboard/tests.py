@@ -85,3 +85,7 @@ class KanboardTests(KanboardTestCase):
         """
         b = self.create_board()
         self.assertEqual(4, len(b.phases.all()))
+
+        self.assert_(b.backlog)
+        self.assert_(b.done)
+        self.assert_(b.archive)
