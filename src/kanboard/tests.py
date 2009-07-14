@@ -84,7 +84,7 @@ class KanboardTests(KanboardTestCase):
         backlog, progress, done, and archive phases created as defaults.
         """
         b = self.create_board()
-        self.assertEqual(4, len(b.phases.all()))
+        self.assertEqual(3, len(b.phases.all()))
 
         self.assert_(b.backlog)
         self.assert_(b.done)

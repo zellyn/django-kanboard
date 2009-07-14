@@ -12,9 +12,6 @@ def create_default_phases(sender, instance, created, **kwargs):
     backlog = Phase(title="Backlog", board=instance, type=Phase.BACKLOG, order=0)
     backlog.save()
 
-    progress = Phase(title="In progress", board=instance, type=Phase.PROGRESS, order=1)
-    progress.save()
-
     done = Phase(title="Done", board=instance, type=Phase.DONE, order=2)
     done.save()
 
