@@ -64,6 +64,12 @@ class KanboardTestCase(TestCase):
 class KanboardTests(KanboardTestCase):
     def setUp(self):
         self.board = self.create_board()
+        
+        self.ideation = self.create_phase(save=True, title="Ideation", order=1, board=self.board)
+        self.design = self.create_phase(save=True, title="Design", order=2, board=self.board)
+        self.dev = self.create_phase(save=True, title="Development", order=3, board=self.board)
+        self.test = self.create_phase(save=True, title="Testing", order=4, board=self.board)
+        self.deploy = self.create_phase(save=True, title="Deployment", order=5, board=self.board)
 
     def test_create(self):
         """
@@ -89,3 +95,14 @@ class KanboardTests(KanboardTestCase):
         self.assert_(b.backlog)
         self.assert_(b.done)
         self.assert_(b.archive)
+
+    def test_phase_ordering(self):
+        """
+        board.phases.all() should return them in order.
+        """
+        expected = [self.board.backlog, self.ideation, self.design, self.dev, self.test, self.deploy, self.board.done, self.board.archive]
+        actual = list(self.board.phases.all())
+       
+        from pprint import pformat
+        msg = "%s\n%s" % (pformat(expected), pformat(actual))
+        self.assertEqual(expected, actual, msg)

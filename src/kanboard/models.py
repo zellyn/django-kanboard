@@ -1,6 +1,6 @@
 from django.db import models
 
-from kanboard.signals import set_backlogged_at, create_default_phases
+from kanboard.signals import set_backlogged_at, create_default_phases, update_phase_order
 
 class Card(models.Model):
     title = models.CharField(max_length=80)
@@ -71,4 +71,13 @@ class Phase(models.Model):
     description = models.TextField(blank=True)
     limit = models.SmallIntegerField(blank=True, null=True)
 
+    class Meta:
+        ordering = ['order', ]
 
+    def __unicode__(self):
+        return u"%s - %s (%s)" % (self.board.title, self.title, self.order)
+
+models.signals.post_save.connect(update_phase_order, sender=Phase)
+
+
+#TODO: Implement goal object
