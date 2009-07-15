@@ -18,6 +18,11 @@ class Card(models.Model):
     blocked = models.BooleanField()
     blocked_because = models.TextField(blank=True)
 
+    class Meta:
+        ordering = ['order', ]
+
+    def __unicode__(self):
+        return "%s - %s (%s) -- %s" % (self.id, self.title, self.order, self.phase.title)
 models.signals.pre_save.connect(set_backlogged_at, sender=Card)
 
 class Board(models.Model):

@@ -8,29 +8,28 @@ class KanboardTestCase(TestCase):
         return random.randint(1, 1000)
 
     def create_board(self, save=True, **kwargs):
-        if not kwargs:
-            index = self.random_int()
-            kwargs = {
-                'title': 'Test Board %s' % index,
-                'slug': 'test-board-%s' % index,
-            }
-                
-        b = self.create_object(Board, save, kwargs)
+        index = self.random_int()
+        defaults = {
+            'title': 'Test Board %s' % index,
+            'slug': 'test-board-%s' % index,
+        }
+        defaults.update(kwargs)
+        b = self.create_object(Board, save, defaults)
         if save:
             self.assert_(b.title)
             self.assert_(b.slug)
         return b
 
     def create_card(self, save=True, **kwargs):
-        if not kwargs:
-            index = self.random_int()
-            phase = self.create_phase()
-            kwargs = {
-                'title': 'Card %s' % index,
-                'phase': phase,
-                'order': 0,
-            }
-        c = self.create_object(Card, save, kwargs)
+        index = self.random_int()
+        phase = self.create_phase()
+        defaults = {
+            'title': 'Card %s' % index,
+            'phase': phase,
+            'order': 0,
+        }
+        defaults.update(kwargs)
+        c = self.create_object(Card, save, defaults)
         if save:
             self.assert_(c.title)
             self.assert_(c.phase)
@@ -38,15 +37,16 @@ class KanboardTestCase(TestCase):
         return c
 
     def create_phase(self, save=True, **kwargs):
-        if not kwargs:
-            index = self.random_int()
-            board = self.create_board()
-            kwargs = {
-                'title': 'Phase %s' % index,
-                'board': board,
-                'order': 0,
-            }
-        p = self.create_object(Phase, save, kwargs)
+        index = self.random_int()
+        board = self.create_board()
+        defaults = {
+            'title': 'Phase %s' % index,
+            'board': board,
+            'order': 0,
+        }
+        defaults.update(kwargs)
+
+        p = self.create_object(Phase, save, defaults)
         if save:
             self.assert_(p.title)
             self.assert_(p.board)
@@ -106,3 +106,19 @@ class KanboardTests(KanboardTestCase):
         from pprint import pformat
         msg = "%s\n%s" % (pformat(expected), pformat(actual))
         self.assertEqual(expected, actual, msg)
+
+    def test_cards_ordering(self):
+        """
+        phase.cards.all() should return them in order.
+        """
+        backlog = self.board.get_backlog()
+
+        common_args = dict(save=True, phase=backlog)
+        card2 = self.create_card(order=2, **common_args)
+        card1 = self.create_card(order=1, **common_args)
+        card0 = self.create_card(order=0, **common_args)
+
+        expected = [card0, card1, card2]
+        actual = list(backlog.cards.all())
+
+        self.assertEqual(expected, actual)
