@@ -1,4 +1,5 @@
 syntax:glob
+.hgignore
 *.swp
 *.DS_Store
 *.pyc
