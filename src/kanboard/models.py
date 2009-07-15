@@ -27,21 +27,27 @@ class Board(models.Model):
     #Optional fields
     description = models.TextField(blank=True)
 
-    @property
-    def backlog(self):
+    def get_backlog(self):
+        """
+        Returns a boards Backlog phase
+        """
         try:
             return Phase.objects.get(board=self, type=Phase.BACKLOG)
         except Phase.DoesNotExist:
             return none
-    @property
-    def done(self):
+    def get_done(self):
+        """
+        Returns a board's Done phase
+        """
         try:
             return Phase.objects.get(board=self, type=Phase.DONE)
         except Phase.DoesNotExist:
             return None
 
-    @property
-    def archive(self):
+    def get_archive(self):
+        """
+        Returns a board's Archive phase
+        """
         try:
             return Phase.objects.get(board=self, type=Phase.ARCHIVE)
         except Phase.DoesNotExist:

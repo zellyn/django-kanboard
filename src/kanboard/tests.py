@@ -92,15 +92,15 @@ class KanboardTests(KanboardTestCase):
         b = self.create_board()
         self.assertEqual(3, len(b.phases.all()))
 
-        self.assert_(b.backlog)
-        self.assert_(b.done)
-        self.assert_(b.archive)
+        self.assert_(b.get_backlog())
+        self.assert_(b.get_done())
+        self.assert_(b.get_archive())
 
     def test_phase_ordering(self):
         """
         board.phases.all() should return them in order.
         """
-        expected = [self.board.backlog, self.ideation, self.design, self.dev, self.test, self.deploy, self.board.done, self.board.archive]
+        expected = [self.board.get_backlog(), self.ideation, self.design, self.dev, self.test, self.deploy, self.board.get_done(), self.board.get_archive()]
         actual = list(self.board.phases.all())
        
         from pprint import pformat

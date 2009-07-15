@@ -27,11 +27,11 @@ def update_phase_order(sender, instance, created, **kwargs):
         index = progress_phases.count()-1
         highest_phase = progress_phases[index]
 
-        done = board.done
+        done = board.get_done()
         done.order = highest_phase.order + 1
         done.save()
 
-        archive = board.archive
+        archive = board.get_archive()
         archive.order = highest_phase.order + 2
         archive.save()
 
