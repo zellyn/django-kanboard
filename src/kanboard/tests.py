@@ -122,3 +122,10 @@ class KanboardTests(KanboardTestCase):
         actual = list(backlog.cards.all())
 
         self.assertEqual(expected, actual)
+    
+    def test_card_changing_phase(self):
+        """
+        card.change_phase(phase) should move the card to that phase.
+        It should update card.started_at and card.done_at if appropriate.
+        """
+        pass
