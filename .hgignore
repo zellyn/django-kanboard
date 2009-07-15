@@ -3,6 +3,7 @@ syntax: glob
 *.pyc
 *.pyo
 .installed.cfg
+*.DS_Store
 bin
 develop-eggs
 dist
