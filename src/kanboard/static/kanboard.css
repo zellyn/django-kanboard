@@ -1,8 +1,8 @@
 #board {
-  width: 800px;
+  width: 1000px;
 }
 
-.title {
+h2 {
   font-size: 1.3em;
   font-weight: bold;
   margin: 2px;
@@ -11,10 +11,21 @@
 .column {
   width: 200px;
   float: left;
+  
 }
 
-.card {
+ul {
+  padding-left: 0;
+  background: #eeeeee;
+  min-height: 3em;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+li {
   border: 1px black solid;
+  background: white;
   padding: 3px;
-  margin: 2px 1px;
+  margin: 10px 5px;
+  list-style: none;
 }

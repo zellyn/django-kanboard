@@ -3,39 +3,52 @@
   <head>
   <title>Kanboard Test</title>
   <link rel="stylesheet" href="kanboard.css" type="text/css" media="all" />
+  <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+  <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
+  <script type="text/javascript">
+    $(function() {
+      $('.sortable').sortable({connectWith: '.sortable'}).disableSelection();
+    });
+  </script>
 </head>
 <body>
 <h1>Kanboard Test</h1>
 
 <div id="board">
   <div class="column">
-    <div class="title">Ideation</div>
-    <div class="card">
-      <h3>Snow White</h3>
-      <p>Think about a Snow White movie. Animated, preferably.</p>
-    </div>
-    <div class="card">
-      <h3>The Little Mermaid</h3>
-      <p>Another possible animated film.</p>
-    </div>
+    <h2>Ideation</h2>
+    <ul class="sortable">
+      <li>
+        <h3>Snow White</h3>
+        <p>Think about a Snow White movie. Animated, preferably.</p>
+      </li>
+      <li>
+        <h3>The Little Mermaid</h3>
+        <p>Another possible animated film.</p>
+      </li>
+    </ul>
   </div>
   <div class="column">
-    <div class="title">Design</div>
-    <div class="card">
-      <h3>Aladdin</h3>
-      <p>Design for Aladdin. Genie, flying carpet, etc.</p>
-    </div>
+    <h2>Design</h2>
+    <ul class="sortable">
+      <li>
+        <h3>Aladdin</h3>
+        <p>Design for Aladdin. Genie, flying carpet, etc.</p>
+      </li>
+    </ul>
   </div>
   <div class="column">
-    <div class="title">Development</div>
-    <div class="card">
-      <h3>Shrek</h3>
-      <p>Big green guy, donkey, etc.</p>
-    </div>
-    <div class="card">
-      <h3>Shrek 5</h3>
-      <p>Because there's no such thing as &ldquo;too many.&rdquo;</p>
-    </div>
+    <h2>Development</h2>
+    <ul class="sortable">
+      <li>
+        <h3>Shrek</h3>
+        <p>Big green guy, donkey, etc.</p>
+      </li>
+      <li>
+        <h3>Shrek 5</h3>
+        <p>Because there's no such thing as &ldquo;too many.&rdquo;</p>
+      </li>
+    </ul>
   </div>
 </div>
 
