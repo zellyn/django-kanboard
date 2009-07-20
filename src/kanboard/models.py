@@ -23,6 +23,16 @@ class Card(models.Model):
 
     def __unicode__(self):
         return "%s - %s (%s) -- %s" % (self.id, self.title, self.order, self.phase.title)
+
+    def change_phase(self, phase):
+        """
+        Changes a cards phase to the one passed in.
+        If the card changes from backlogged to started
+        or started to done it updates the appropriate
+        timestamps.
+        """
+        pass
+
 models.signals.pre_save.connect(set_backlogged_at, sender=Card)
 
 class Board(models.Model):
