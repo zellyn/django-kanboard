@@ -126,7 +126,7 @@ class KanboardTests(KanboardTestCase):
 
         self.assertEqual(expected, actual)
     
-    def ztest_card_changing_phase(self):
+    def test_card_changing_phase(self):
         """
         card.change_phase(phase) should move the card to that phase.
         It should update card.started_at and card.done_at if appropriate.

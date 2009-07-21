@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 
 from kanboard.signals import set_backlogged_at, create_default_phases, update_phase_order
@@ -24,14 +26,27 @@ class Card(models.Model):
     def __unicode__(self):
         return "%s - %s (%s) -- %s" % (self.id, self.title, self.order, self.phase.title)
 
-    def change_phase(self, phase):
+    def change_phase(self, new_phase):
         """
         Changes a cards phase to the one passed in.
         If the card changes from backlogged to started
         or started to done it updates the appropriate
         timestamps.
         """
-        pass
+        if self.phase.type == Phase.BACKLOG and new_phase.type in (Phase.PROGRESS, Phase.DONE, Phase.ARCHIVE):
+            self.started_at = datetime.datetime.now()
+
+        if new_phase.type in (Phase.DONE, Phase.ARCHIVE):
+            if not self.done_at: self.done_at = datetime.datetime.now()
+
+        if new_phase.type == Phase.PROGRESS and self.done_at:
+            self.done_at == None
+
+        if new_phase.type == Phase.BACKLOG and self.started_at:
+            self.started_at == None
+
+        self.phase = new_phase
+        self.save()
 
 models.signals.pre_save.connect(set_backlogged_at, sender=Card)
 
