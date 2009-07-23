@@ -157,8 +157,7 @@ class KanboardTests(KanboardTestCase):
         later = datetime.datetime.now() + datetime.timedelta(days=2)
         way_later = later + datetime.timedelta(days=7)
 
-        card = self.create_card(phase=self.backlog)
-        card.change_phase(self.backlog, change_at=now)
+        card = self.create_card(phase=self.backlog, backlogged_at=now)
         self.assertEqual(card.backlogged_at, now)
 
         card.change_phase(self.design, change_at=later)

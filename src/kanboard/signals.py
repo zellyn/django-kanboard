@@ -3,7 +3,8 @@ import datetime
 
 def set_backlogged_at(sender, instance, **kwargs):
     if instance.id: return None
-    instance.backlogged_at = datetime.datetime.now()
+    if not instance.backlogged_at:
+        instance.backlogged_at = datetime.datetime.now()
 
 def create_default_phases(sender, instance, created, **kwargs):
     if not created: return None
