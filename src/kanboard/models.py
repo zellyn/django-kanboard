@@ -26,18 +26,20 @@ class Card(models.Model):
     def __unicode__(self):
         return "%s - %s (%s) -- %s" % (self.id, self.title, self.order, self.phase.title)
 
-    def change_phase(self, new_phase):
+    def change_phase(self, new_phase, change_at=None):
         """
         Changes a cards phase to the one passed in.
         If the card changes from backlogged to started
         or started to done it updates the appropriate
         timestamps.
         """
+        if not change_at: change_at = datetime.datetime.now()
+
         if self.phase.type == Phase.BACKLOG and new_phase.type in (Phase.PROGRESS, Phase.DONE, Phase.ARCHIVE):
-            self.started_at = datetime.datetime.now()
+            self.started_at = change_at
 
         if new_phase.type in (Phase.DONE, Phase.ARCHIVE):
-            if not self.done_at: self.done_at = datetime.datetime.now()
+            if not self.done_at: self.done_at = change_at
 
         if new_phase.type == Phase.PROGRESS and self.done_at:
             self.done_at == None

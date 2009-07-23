@@ -1,4 +1,6 @@
+import datetime
 import random
+
 from django.test import TestCase
 
 from kanboard.models import Board, Card, Phase
@@ -144,3 +146,22 @@ class KanboardTests(KanboardTestCase):
 
         card.change_phase(self.archive)
         self.assertEqual(done_at, card.done_at)
+
+    def test_phase_change_with_datetime(self):
+        """
+        card.change_phase should accept an optional datetime argument.
+        All applicable card timestamps should be updated to use
+        that argument.
+        """
+        now = datetime.datetime.now()
+        later = datetime.datetime.now() + datetime.timedelta(days=2)
+        way_later = later + datetime.timedelta(days=7)
+
+        card = self.create_card(phase=self.backlog, backlogged_at=now)
+        self.assertEqual(card.backlogged_at, now)
+
+        card.change_phase(self.design, change_at=later)
+        self.assertEqual(card.started_at, later)
+
+        card.change_phase(self.archive, change_at=way_later)
+        self.assertEqual(card.done_at, way_later)
