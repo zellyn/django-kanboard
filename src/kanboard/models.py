@@ -47,9 +47,11 @@ class Card(models.Model):
         if new_phase.type == Phase.BACKLOG and self.started_at:
             self.started_at == None
 
+        from_phase = self.phase
         self.phase = new_phase
-        phase_change.send(sender=self, from_phase=self.phase, to_phase=new_phase, changed_at=change_at)
         self.save()
+        
+        phase_change.send(sender=self, from_phase=from_phase, to_phase=new_phase, changed_at=change_at)
 
 models.signals.pre_save.connect(set_backlogged_at, sender=Card)
 phase_change.connect(update_phase_log)

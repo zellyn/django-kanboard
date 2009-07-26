@@ -179,8 +179,8 @@ class StatsTests(KanboardTestCase):
 
         for phase_name, count in expected_counts.items():
             phase = Phase.objects.get(title=phase_name, board=self.board)
-            for i in xrange(0, count+1):
-                card =self.create_card()
+            for i in xrange(0, count):
+                card =self.create_card(phase=self.backlog)
                 card.change_phase(phase) 
 
     def test_cumulative_flow(self):
@@ -202,6 +202,22 @@ class StatsTests(KanboardTestCase):
         }
         self.set_up_board(expected)
 
-        result = self.stats.cumulative_flow()
+        self.assertEqual(expected, self.stats.cumulative_flow())
 
-        self.assertEqual(expected, result)
+        card = self.test.cards.all()[0]
+        card.change_phase(self.deploy)
+    
+        #Let's change some phases
+        expected[u'Testing'] = 5
+        expected[u'Deployment'] = 2
+        result = self.stats.cumulative_flow()
+        self.assertEqual(expected[u'Testing'], result[u'Testing'])
+        self.assertEqual(expected[u'Deployment'], result[u'Deployment'])
+
+        #let's try a backwards move
+        card = self.dev.cards.all()[0]
+        card.change_phase(self.design)
+
+        expected[u'Development'] = 2
+        expected[u'Design'] = 8
+        self.assertEqual(expected, self.stats.cumulative_flow())
