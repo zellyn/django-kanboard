@@ -3,9 +3,23 @@ import random
 
 from django.test import TestCase
 
-from kanboard.models import Board, Card, Phase
+from kanboard.models import Board, Card, Phase, KanboardStats
 
 class KanboardTestCase(TestCase):
+    def setUp(self):
+        self.board = self.create_board()
+
+        self.backlog = self.board.get_backlog()
+        self.ideation = self.create_phase(save=True, title="Ideation", order=1, board=self.board)
+        self.design = self.create_phase(save=True, title="Design", order=2, board=self.board)
+        self.dev = self.create_phase(save=True, title="Development", order=3, board=self.board)
+        self.test = self.create_phase(save=True, title="Testing", order=4, board=self.board)
+        self.deploy = self.create_phase(save=True, title="Deployment", order=5, board=self.board)
+        self.done = self.board.get_done()
+        self.archive = self.board.get_archive()
+        
+        super(KanboardTestCase, self).setUp()
+
     def random_int(self):
         return random.randint(1, 1000)
 
@@ -64,18 +78,6 @@ class KanboardTestCase(TestCase):
 
 
 class KanboardTests(KanboardTestCase):
-    def setUp(self):
-        self.board = self.create_board()
-
-        self.backlog = self.board.get_backlog()
-        self.ideation = self.create_phase(save=True, title="Ideation", order=1, board=self.board)
-        self.design = self.create_phase(save=True, title="Design", order=2, board=self.board)
-        self.dev = self.create_phase(save=True, title="Development", order=3, board=self.board)
-        self.test = self.create_phase(save=True, title="Testing", order=4, board=self.board)
-        self.deploy = self.create_phase(save=True, title="Deployment", order=5, board=self.board)
-        self.done = self.board.get_done()
-        self.archive = self.board.get_archive()
-
     def test_create(self):
         """
         Ensure that our convenience methods are actually working.
@@ -165,3 +167,41 @@ class KanboardTests(KanboardTestCase):
 
         card.change_phase(self.archive, change_at=way_later)
         self.assertEqual(card.done_at, way_later)
+
+class StatsTests(KanboardTestCase):
+    def setUp(self):
+        super(StatsTests, self).setUp()
+        self.stats = KanboardStats(board=self.board)
+
+    def set_up_board(self, expected_counts, board=None):
+        if board is None:
+            board = self.board
+
+        for phase_name, count in expected_counts.items():
+            phase = Phase.objects.get(title=phase_name, board=self.board)
+            for i in xrange(0, count+1):
+                card =self.create_card()
+                card.change_phase(phase) 
+
+    def test_cumulative_flow(self):
+        """
+        cumulative_flow should return a dictionary-like object,
+        each key is a Phase name and the value is the number of 
+        objects that were in that phase on that day.
+
+        Note: The done count should equal Done + Archive
+        """
+        expected = {
+            u'Backlog': 5,
+            u'Ideation': 2,
+            u'Design': 7,
+            u'Development': 3,
+            u'Testing': 6,
+            u'Deployment': 1,
+            u'Done': 3,
+        }
+        self.set_up_board(expected)
+
+        result = self.stats.cumulative_flow()
+
+        self.assertEqual(expected, result)
