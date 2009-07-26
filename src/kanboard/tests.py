@@ -173,15 +173,18 @@ class StatsTests(KanboardTestCase):
         super(StatsTests, self).setUp()
         self.stats = KanboardStats(board=self.board)
 
-    def set_up_board(self, expected_counts, board=None):
+    def set_up_board(self, expected_counts, board=None, date=None):
         if board is None:
             board = self.board
+
+        if date is None:
+            date = datetime.date.today()
 
         for phase_name, count in expected_counts.items():
             phase = Phase.objects.get(title=phase_name, board=self.board)
             for i in xrange(0, count):
-                card =self.create_card(phase=self.backlog)
-                card.change_phase(phase) 
+                card =self.create_card(phase=self.backlog, backlogged_at=date)
+                card.change_phase(phase, change_at=date) 
 
     def test_cumulative_flow(self):
         """
@@ -221,3 +224,62 @@ class StatsTests(KanboardTestCase):
         expected[u'Development'] = 2
         expected[u'Design'] = 8
         self.assertEqual(expected, self.stats.cumulative_flow())
+
+    def test_cumulative_flow_dates(self):
+        """
+        cumulative_flow should be able to give us historical
+        data by date. Whenever data is missing (because
+        no moves were made) it should be extrapolated from
+        the previous log entry.
+        """
+        four_days_ago = datetime.date.today() - datetime.timedelta(days=4)
+        three_days_ago = datetime.date.today() - datetime.timedelta(days=3)
+        two_days_ago = datetime.date.today() - datetime.timedelta(days=2)
+        one_day_ago = datetime.date.today() - datetime.timedelta(days=1)
+
+        three_ago_expected = {
+            u'Backlog': 5,
+            u'Ideation': 2,
+            u'Design': 5,
+            u'Development': 4,
+            u'Testing': 6,
+            u'Deployment': 2,
+            u'Done': 0,
+        }
+        self.set_up_board(three_ago_expected, date=three_days_ago)
+        self.assertEqual(three_ago_expected,
+                         self.stats.cumulative_flow(three_days_ago))
+
+        #Change something one day ago
+        self.deploy.cards.all()[0].change_phase(self.done, change_at=one_day_ago) 
+        one_ago_expected = {
+            u'Backlog': 5,
+            u'Ideation': 2,
+            u'Design': 5,
+            u'Development': 4,
+            u'Testing': 6,
+            u'Deployment': 1,
+            u'Done': 1,
+        }
+        self.assertEqual(one_ago_expected,
+                         self.stats.cumulative_flow(one_day_ago))
+
+        #Two days ago should equal three days ago.
+        self.assertEqual(three_ago_expected,
+                         self.stats.cumulative_flow(two_days_ago)) 
+
+
+        #Test before the board was setup
+        four_ago_expected = {
+            u'Backlog': 0,
+            u'Ideation': 0,
+            u'Design': 0,
+            u'Development': 0,
+            u'Testing': 0,
+            u'Deployment': 0,
+            u'Done': 0,
+        }
+        self.assertEqual(four_ago_expected,
+                         self.stats.cumulative_flow(four_days_ago))
+
+

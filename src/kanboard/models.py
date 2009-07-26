@@ -141,7 +141,7 @@ class PhaseLog(models.Model):
         unique_together = ('phase', 'date')
 
     def __unicode__(self):
-        return u"%s log on %s - %s" % (self.phase.title, self.count, self.date)
+        return u"%s log on %s - %s" % (self.phase.title, self.date, self.count)
 
 #TODO: Implement goal object
 
@@ -160,11 +160,11 @@ class KanboardStats(object):
         result = {}
         for phase in self.board.phases.all():
             try:
-                log = PhaseLog.objects.get(phase=phase, date=date)
+                log = PhaseLog.objects.filter(phase=phase, date__lte=date).order_by('-date')[0]
                 result[phase.title] = log.count
-            except PhaseLog.DoesNotExist:
+            except IndexError:
                 #We assume the count is 0 to start because 
-                #the phase may not have existed on the date requested
+                #the phase may not have existed on or before the date requested
                 result[phase.title] = 0
 
         backlog, archive = self.board.get_backlog(), self.board.get_archive()
