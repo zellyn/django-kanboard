@@ -1,1 +1,27 @@
 {% extends 'kanboard/base.html' %}
+
+{% block body %}
+
+<h1>Kanboard Test</h1>
+
+<div id="board">
+  {% for phase in board.phases.all %}
+  <div class="column">
+    <h2>{{ phase.title }}</h2>
+    <ul class="sortable" id='sortable-{{ phase.id }}'>
+      {% for card in phase.cards.all %}
+       <li id='card-{{ card.id }}'>
+        <h3>{{ card.title }}</h3>
+        <p>{{ card.description }}</p>
+      </li>
+     {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</div>
+
+<ul id="messages" style="clear:left;">
+</ul>
+
+
+{% endblock body %}
