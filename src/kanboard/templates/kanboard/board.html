@@ -8,9 +8,9 @@
   {% for phase in board.phases.all %}
   <div class="column">
     <h2>{{ phase.title }}</h2>
-    <ul class="sortable" id='sortable-{{ phase.id }}'>
+    <ul class="sortable phase" id='sortable-{{ phase.id }}'>
       {% for card in phase.cards.all %}
-       <li id='card-{{ card.id }}'>
+       <li class="card" id='card-{{ card.id }}'>
         <h3>{{ card.title }}</h3>
         <p>{{ card.description }}</p>
       </li>
