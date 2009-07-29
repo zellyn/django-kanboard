@@ -19,7 +19,8 @@
           var data = {};
           $('ul.phase').each(function() {
             data[this.id] = $.map($(this).find('li.card'), function(y) { return y.id})
-          })
+          });
+          // TODO:zjh - add error function to display debug info
           $.post('update/', data);
         }
       }).disableSelection();
