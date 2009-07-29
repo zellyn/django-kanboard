@@ -1,3 +1,9 @@
-* Stats: Backlog to done -- at any day, average over X days
-* Stats: Start to done -- at any day, average over X days 
-* Stats: Cumulative flow -- on any given day, series for past X days
+# -*- coding: utf-8 -*-
+* Stats
+** Backlog to done -- at any day, average over X days
+** Start to done -- at any day, average over X days 
+** Cumulative flow -- on any given day, series for past X days
+* Tests
+** Check why create_card always creates a phase, and why create_phase a board
+** Add tests for /update/ POST view
+
