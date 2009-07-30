@@ -11,7 +11,7 @@ def create_phase_log(sender, instance, created, **kwargs):
     log = PhaseLog(phase=instance, count=0, date=datetime.date.today())
     log.save()
 
-def update_phase_log(signal, sender, from_phase, to_phase, changed_at):
+def update_phase_log(signal, sender, from_phase, to_phase, changed_at, **kwargs):
     from_phase.update_log(from_phase.cards.count(), changed_at)    
     to_phase.update_log(to_phase.cards.count(), changed_at)
 
