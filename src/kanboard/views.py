@@ -36,10 +36,19 @@ def update(request, board_slug):
                 cards.append(card)
             updates.append((phase, cards))
             updates.sort(cmp=lambda x,y: cmp(x[0].order, y[0].order))
+
+            for phase, cards in updates:
+                for card in cards:
+                    if card.phase != phase:
+                        card.change_phase(phase)
+            for phase, cards in updates:
+                for i, card in enumerate(cards):
+                    card.order = i
+                    card.save()
+
     except Exception, e:
         print "Exception: %s, %r" % (e, e)
         raise
 
-    print updates
 
     return HttpResponse() # nothing exciting…
