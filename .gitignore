@@ -12,3 +12,4 @@ downloads
 eggs
 parts
 src/*.egg-info
+.coverage
