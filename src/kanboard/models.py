@@ -6,6 +6,7 @@ from kanboard.signals import set_backlogged_at, create_default_phases, update_ph
 
 class Card(models.Model):
     title = models.CharField(max_length=80)
+    board = models.ForeignKey("Board", related_name="cards")
     phase = models.ForeignKey("Phase", related_name="cards")
     order = models.SmallIntegerField() #Order is within a phase, steps are pegged to a board
     backlogged_at = models.DateTimeField()
@@ -153,6 +154,21 @@ class KanboardStats(object):
     """
     def __init__(self, board):
         self.board = board
+
+    def cycle_time(self, start=None, finish=None):
+        now = datetime.datetime.now()
+        if not finish: finish = now 
+        
+        cards = Card.objects.filter(board = self.board, done_at__lte=finish)
+        if start:
+            cards = cards.filter(done_at__gte=start)
+
+        if not cards:
+            return datetime.timedelta() 
+
+        deltas = [ card.done_at - card.backlogged_at for card in cards ]
+        cycle_sum = sum(deltas, datetime.timedelta())
+        return cycle_sum / cards.count()
 
     def cumulative_flow(self, date=None):
         if date is None: date = datetime.date.today()

@@ -43,6 +43,7 @@ class KanboardTestCase(TestCase):
             'title': 'Card %s' % index,
             'phase': phase,
             'order': 0,
+            'board': phase.board
         }
         defaults.update(kwargs)
         c = self.create_object(Card, save, defaults)
@@ -183,7 +184,7 @@ class StatsTests(KanboardTestCase):
         for phase_name, count in expected_counts.items():
             phase = Phase.objects.get(title=phase_name, board=self.board)
             for i in xrange(0, count):
-                card =self.create_card(phase=self.backlog, backlogged_at=date)
+                card = self.create_card(phase=self.backlog, backlogged_at=date, board=board)
                 card.change_phase(phase, change_at=date) 
 
     def test_cycle_time(self):
@@ -201,6 +202,31 @@ class StatsTests(KanboardTestCase):
         board_start = datetime.datetime.now() - datetime.timedelta(days=3)
         self.set_up_board(board, date=board_start)
 
+        #With no cards done, the average should be 0
+        self.assertEqual(0, self.stats.cycle_time().days )
+
+        #Complete a card one day ago, and our average should be 2 days
+        card = self.backlog.cards.all()[0]
+        one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+        card.change_phase(self.done, change_at=one_day_ago) 
+        self.assertEqual(2, self.stats.cycle_time().days)
+        self.assertEqual(0, self.stats.cycle_time().seconds)
+
+        #Let's complete a card today making our average 2.5 days
+        card = self.backlog.cards.all()[1]
+        card.change_phase(self.done)
+        self.assertEqual(2, self.stats.cycle_time().days) #2 days
+        self.assertEqual(12 * 60 * 60, self.stats.cycle_time().seconds) #12 hours
+
+        #Let's check that we can ask for cycle time in the past
+        cycle_time = self.stats.cycle_time(start=one_day_ago, finish=one_day_ago)
+        self.assertEqual(2, cycle_time.days)
+        self.assertEqual(0, cycle_time.seconds)
+
+        #Let's check that we can ask for a cycle time for just today
+        today = datetime.date.today()
+        cycle_time = self.stats.cycle_time(start=today)
+        self.assertEqual(3, cycle_time.days)
 
     def test_cumulative_flow(self):
         """
