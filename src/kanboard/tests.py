@@ -186,6 +186,22 @@ class StatsTests(KanboardTestCase):
                 card =self.create_card(phase=self.backlog, backlogged_at=date)
                 card.change_phase(phase, change_at=date) 
 
+    def test_cycle_time(self):
+        """
+        cycle_time should return a timedelta object representing the
+        average cycle time of all objects on a board.
+
+        It optionally should accept a start and end datetime object,
+        which will limit the average to cards completed during that
+        time phase.
+        """
+        board = {
+            u'Backlog': 4,
+        } 
+        board_start = datetime.datetime.now() - datetime.timedelta(days=3)
+        self.set_up_board(board, date=board_start)
+
+
     def test_cumulative_flow(self):
         """
         cumulative_flow should return a dictionary-like object,
