@@ -155,7 +155,7 @@ class KanboardStats(object):
     def __init__(self, board):
         self.board = board
 
-    def cycle_time(self, start=None, finish=None):
+    def lead_time(self, start=None, finish=None):
         now = datetime.datetime.now()
         if not finish: finish = now 
         
@@ -167,8 +167,8 @@ class KanboardStats(object):
             return datetime.timedelta() 
 
         deltas = [ card.done_at - card.backlogged_at for card in cards ]
-        cycle_sum = sum(deltas, datetime.timedelta())
-        return cycle_sum / cards.count()
+        lead_sum = sum(deltas, datetime.timedelta())
+        return lead_sum / cards.count()
 
     def cumulative_flow(self, date=None):
         if date is None: date = datetime.date.today()
