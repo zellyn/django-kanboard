@@ -187,15 +187,10 @@ class StatsTests(KanboardTestCase):
                 card = self.create_card(phase=self.backlog, backlogged_at=date, board=board)
                 card.change_phase(phase, change_at=date) 
 
-    def test_lead_time(self):
-        """
-        lead_time should return a timedelta object representing the
-        average lead time of all objects on a board.
+    def test_cycle_time(self):
+        pass
 
-        It optionally should accept a start and end datetime object,
-        which will limit the average to cards completed during that
-        time phase.
-        """
+    def test_lead_time(self):
         board = {
             u'Backlog': 4,
         } 
@@ -229,13 +224,6 @@ class StatsTests(KanboardTestCase):
         self.assertEqual(3, lead_time.days)
 
     def test_cumulative_flow(self):
-        """
-        cumulative_flow should return a dictionary-like object,
-        each key is a Phase name and the value is the number of 
-        objects that were in that phase on that day.
-
-        Note: The done count should equal Done + Archive
-        """
         expected = {
             u'Backlog': 5,
             u'Ideation': 2,

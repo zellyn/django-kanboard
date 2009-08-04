@@ -155,7 +155,25 @@ class KanboardStats(object):
     def __init__(self, board):
         self.board = board
 
+    def cycle_time(self, start=None, finish=None):
+        """
+        cycle_time returns a timedelta representing the
+        average cycle time of all completed objects on a board.
+
+        Note: Cycle time clock starts when work begins on the request and ends when the item is ready for delivery.
+        """
+
     def lead_time(self, start=None, finish=None):
+        """
+        lead_time returns a timedelta object representing the
+        average lead time of all completed objects on a board.
+
+        It optionally accepts a start and end datetime object,
+        which will limit the average to cards completed during that
+        time phase.
+
+        Note: Lead time clock starts when the request is made and ends at delivery.
+        """
         now = datetime.datetime.now()
         if not finish: finish = now 
         
@@ -171,6 +189,13 @@ class KanboardStats(object):
         return lead_sum / cards.count()
 
     def cumulative_flow(self, date=None):
+        """
+        cumulative_flow returns a dictionary-like object,
+        each key is a Phase name and the value is the number of 
+        objects that were in that phase on that day.
+
+        Note: The done count equals Done + Archive
+        """
         if date is None: date = datetime.date.today()
         
         result = {}
