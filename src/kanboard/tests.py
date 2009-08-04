@@ -188,7 +188,28 @@ class StatsTests(KanboardTestCase):
                 card.change_phase(phase, change_at=date) 
 
     def test_cycle_time(self):
-        pass
+        board = {
+            u'Backlog': 4,
+        } 
+        board_start = datetime.datetime.now() - datetime.timedelta(days=10)
+        self.set_up_board(board, date=board_start)
+
+        #With no cards done, the average should be 0
+        self.assertEqual(0, self.stats.cycle_time().days)
+
+        #Let's start a card 9 days ago and complete it today
+        nine_days_ago = datetime.datetime.now() - datetime.timedelta(days=9)
+        card = self.backlog.cards.all()[0]
+        card.change_phase(self.design, change_at=nine_days_ago)
+        card.change_phase(self.done)
+        self.assertEqual(9, self.stats.cycle_time().days)
+
+        #Let's start a card 5 days ago and complete it today
+        five_days_ago = datetime.datetime.now() - datetime.timedelta(days=5)
+        card = self.backlog.cards.all()[0]
+        card.change_phase(self.dev, change_at=five_days_ago)
+        card.change_phase(self.archive)
+        self.assertEqual(7, self.stats.cycle_time().days)
 
     def test_lead_time(self):
         board = {

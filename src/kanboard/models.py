@@ -155,6 +155,21 @@ class KanboardStats(object):
     def __init__(self, board):
         self.board = board
 
+    def delta_from_done(self, attr_name, start=None, finish=None):
+        now = datetime.datetime.now()
+        if not finish: finish = now
+        
+        cards = Card.objects.filter(board = self.board, done_at__lte=finish)
+        if start:
+            cards = cards.filter(done_at__gte=start)
+
+        if not cards:
+            return datetime.timedelta()
+
+        deltas = [ card.done_at - getattr(card, attr_name) for card in cards ]
+        the_sum = sum(deltas, datetime.timedelta())
+        return the_sum / cards.count()
+
     def cycle_time(self, start=None, finish=None):
         """
         cycle_time returns a timedelta representing the
@@ -162,6 +177,7 @@ class KanboardStats(object):
 
         Note: Cycle time clock starts when work begins on the request and ends when the item is ready for delivery.
         """
+        return self.delta_from_done('started_at', start, finish)
 
     def lead_time(self, start=None, finish=None):
         """
@@ -174,19 +190,7 @@ class KanboardStats(object):
 
         Note: Lead time clock starts when the request is made and ends at delivery.
         """
-        now = datetime.datetime.now()
-        if not finish: finish = now 
-        
-        cards = Card.objects.filter(board = self.board, done_at__lte=finish)
-        if start:
-            cards = cards.filter(done_at__gte=start)
-
-        if not cards:
-            return datetime.timedelta() 
-
-        deltas = [ card.done_at - card.backlogged_at for card in cards ]
-        lead_sum = sum(deltas, datetime.timedelta())
-        return lead_sum / cards.count()
+        return self.delta_from_done('backlogged_at', start, finish)
 
     def cumulative_flow(self, date=None):
         """
