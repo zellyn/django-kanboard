@@ -187,10 +187,10 @@ class StatsTests(KanboardTestCase):
                 card = self.create_card(phase=self.backlog, backlogged_at=date, board=board)
                 card.change_phase(phase, change_at=date) 
 
-    def test_cycle_time(self):
+    def test_lead_time(self):
         """
-        cycle_time should return a timedelta object representing the
-        average cycle time of all objects on a board.
+        lead_time should return a timedelta object representing the
+        average lead time of all objects on a board.
 
         It optionally should accept a start and end datetime object,
         which will limit the average to cards completed during that
@@ -203,30 +203,30 @@ class StatsTests(KanboardTestCase):
         self.set_up_board(board, date=board_start)
 
         #With no cards done, the average should be 0
-        self.assertEqual(0, self.stats.cycle_time().days )
+        self.assertEqual(0, self.stats.lead_time().days )
 
         #Complete a card one day ago, and our average should be 2 days
         card = self.backlog.cards.all()[0]
         one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
         card.change_phase(self.done, change_at=one_day_ago) 
-        self.assertEqual(2, self.stats.cycle_time().days)
-        self.assertEqual(0, self.stats.cycle_time().seconds)
+        self.assertEqual(2, self.stats.lead_time().days)
+        self.assertEqual(0, self.stats.lead_time().seconds)
 
         #Let's complete a card today making our average 2.5 days
         card = self.backlog.cards.all()[1]
         card.change_phase(self.done)
-        self.assertEqual(2, self.stats.cycle_time().days) #2 days
-        self.assertEqual(12 * 60 * 60, self.stats.cycle_time().seconds) #12 hours
+        self.assertEqual(2, self.stats.lead_time().days) #2 days
+        self.assertEqual(12 * 60 * 60, self.stats.lead_time().seconds) #12 hours
 
-        #Let's check that we can ask for cycle time in the past
-        cycle_time = self.stats.cycle_time(start=one_day_ago, finish=one_day_ago)
-        self.assertEqual(2, cycle_time.days)
-        self.assertEqual(0, cycle_time.seconds)
+        #Let's check that we can ask for lead time in the past
+        lead_time = self.stats.lead_time(start=one_day_ago, finish=one_day_ago)
+        self.assertEqual(2, lead_time.days)
+        self.assertEqual(0, lead_time.seconds)
 
-        #Let's check that we can ask for a cycle time for just today
+        #Let's check that we can ask for a lead time for just today
         today = datetime.date.today()
-        cycle_time = self.stats.cycle_time(start=today)
-        self.assertEqual(3, cycle_time.days)
+        lead_time = self.stats.lead_time(start=today)
+        self.assertEqual(3, lead_time.days)
 
     def test_cumulative_flow(self):
         """
