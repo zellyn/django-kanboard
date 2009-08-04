@@ -187,15 +187,31 @@ class StatsTests(KanboardTestCase):
                 card = self.create_card(phase=self.backlog, backlogged_at=date, board=board)
                 card.change_phase(phase, change_at=date) 
 
-    def test_lead_time(self):
-        """
-        lead_time should return a timedelta object representing the
-        average lead time of all objects on a board.
+    def test_cycle_time(self):
+        board = {
+            u'Backlog': 4,
+        } 
+        board_start = datetime.datetime.now() - datetime.timedelta(days=10)
+        self.set_up_board(board, date=board_start)
 
-        It optionally should accept a start and end datetime object,
-        which will limit the average to cards completed during that
-        time phase.
-        """
+        #With no cards done, the average should be 0
+        self.assertEqual(0, self.stats.cycle_time().days)
+
+        #Let's start a card 9 days ago and complete it today
+        nine_days_ago = datetime.datetime.now() - datetime.timedelta(days=9)
+        card = self.backlog.cards.all()[0]
+        card.change_phase(self.design, change_at=nine_days_ago)
+        card.change_phase(self.done)
+        self.assertEqual(9, self.stats.cycle_time().days)
+
+        #Let's start a card 5 days ago and complete it today
+        five_days_ago = datetime.datetime.now() - datetime.timedelta(days=5)
+        card = self.backlog.cards.all()[0]
+        card.change_phase(self.dev, change_at=five_days_ago)
+        card.change_phase(self.archive)
+        self.assertEqual(7, self.stats.cycle_time().days)
+
+    def test_lead_time(self):
         board = {
             u'Backlog': 4,
         } 
@@ -229,13 +245,6 @@ class StatsTests(KanboardTestCase):
         self.assertEqual(3, lead_time.days)
 
     def test_cumulative_flow(self):
-        """
-        cumulative_flow should return a dictionary-like object,
-        each key is a Phase name and the value is the number of 
-        objects that were in that phase on that day.
-
-        Note: The done count should equal Done + Archive
-        """
         expected = {
             u'Backlog': 5,
             u'Ideation': 2,
