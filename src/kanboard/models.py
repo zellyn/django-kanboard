@@ -99,7 +99,7 @@ class Phase(models.Model):
     PROGRESS = 'progress'
     DONE = 'done'
     ARCHIVE = 'archive'
-    CHOICES = (
+    STATUSES = (
         (BACKLOG, 'Backlog'),
         (PROGRESS, 'In progress'),
         (DONE, 'Done'),
@@ -108,8 +108,12 @@ class Phase(models.Model):
 
     title = models.CharField(max_length=80)
     board = models.ForeignKey("Board", related_name="phases")
-    order = models.SmallIntegerField() #Order is within a board
-    type = models.CharField(max_length=25, choices=CHOICES, default=PROGRESS) #We'll need to know if a phase is WIP or not for stats calculation
+    # Order of the phase within the board:
+    order = models.SmallIntegerField()
+    # The status is used to determine whether the phase is WIP or not (for
+    # stats calculation):
+    status = models.CharField(max_length=25, choices=STATUSES,
+                              default=PROGRESS)
 
     #Optional fields
     description = models.TextField(blank=True)
