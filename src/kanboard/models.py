@@ -2,21 +2,27 @@ import datetime
 
 from django.db import models
 
-from kanboard.signals import set_backlogged_at, create_default_phases, update_phase_order, phase_change, update_phase_log, create_phase_log
+from kanboard.signals import create_default_phases, update_phase_order, phase_change, update_phase_log, create_phase_log
 
 class Card(models.Model):
+    """
+    A card is a specific piece of work which must be done on a project, which
+    can be hung on a "board" (under a specific "phase").
+    """
     title = models.CharField(max_length=80)
     board = models.ForeignKey("Board", related_name="cards")
     phase = models.ForeignKey("Phase", related_name="cards")
-    order = models.SmallIntegerField() #Order is within a phase, steps are pegged to a board
-    backlogged_at = models.DateTimeField()
+    # Order is within a phase.
+    order = models.SmallIntegerField()
+    backlogged_at = models.DateTimeField(default=datetime.datetime.now)
 
     #Optional fields
     started_at = models.DateTimeField(blank=True, null=True)
     done_at = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True)
     size = models.CharField(max_length=80, blank=True)
-    color = models.CharField(max_length=7, blank=True) #For #003399 style css colors
+    # Color represents a "#003399" style css color.
+    color = models.CharField(max_length=7, blank=True)
     ready = models.BooleanField()
     blocked = models.BooleanField()
     blocked_because = models.TextField(blank=True)
@@ -54,7 +60,6 @@ class Card(models.Model):
         
         phase_change.send(sender=self, from_phase=from_phase, to_phase=new_phase, changed_at=change_at)
 
-models.signals.pre_save.connect(set_backlogged_at, sender=Card)
 phase_change.connect(update_phase_log)
 
 class Board(models.Model):

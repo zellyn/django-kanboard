@@ -15,11 +15,6 @@ def update_phase_log(signal, sender, from_phase, to_phase, changed_at, **kwargs)
     from_phase.update_log(from_phase.cards.count(), changed_at)    
     to_phase.update_log(to_phase.cards.count(), changed_at)
 
-def set_backlogged_at(sender, instance, **kwargs):
-    if instance.id: return None
-    if not instance.backlogged_at:
-        instance.backlogged_at = datetime.datetime.now()
-
 def create_default_phases(sender, instance, created, **kwargs):
     if not created: return None
 
