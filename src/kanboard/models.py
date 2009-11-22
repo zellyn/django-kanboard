@@ -14,6 +14,7 @@ class Card(models.Model):
     phase = models.ForeignKey("Phase", related_name="cards")
     # Order is within a phase.
     order = models.SmallIntegerField()
+    created_by = models.ForeignKey('auth.User')
     backlogged_at = models.DateTimeField(default=datetime.datetime.now)
 
     #Optional fields
@@ -69,46 +70,17 @@ class Board(models.Model):
     #Optional fields
     description = models.TextField(blank=True)
 
-    def get_backlog(self):
-        """
-        Returns a boards Backlog phase
-        """
-        try:
-            return Phase.objects.get(board=self, type=Phase.BACKLOG)
-        except Phase.DoesNotExist:
-            return none
-
-    def get_done(self):
-        """
-        Returns a board's Done phase
-        """
-        try:
-            return Phase.objects.get(board=self, type=Phase.DONE)
-        except Phase.DoesNotExist:
-            return None
-
-    def get_archive(self):
-        """
-        Returns a board's Archive phase
-        """
-        try:
-            return Phase.objects.get(board=self, type=Phase.ARCHIVE)
-        except Phase.DoesNotExist:
-            return None
-
 models.signals.post_save.connect(signals.create_default_phases, sender=Board)
 
     
 class Phase(models.Model):
-    BACKLOG = 'backlog'
+    UPCOMING = 'upcoming'
     PROGRESS = 'progress'
-    DONE = 'done'
-    ARCHIVE = 'archive'
+    FINISHED = 'finished'
     STATUSES = (
-        (BACKLOG, 'Backlog'),
+        (UPCOMING, 'Upcoming'),
         (PROGRESS, 'In progress'),
-        (DONE, 'Done'),
-        (ARCHIVE, 'Archive'),
+        (FINISHED, 'Finished'),
     )
 
     title = models.CharField(max_length=80)
@@ -125,13 +97,14 @@ class Phase(models.Model):
     limit = models.SmallIntegerField(blank=True, null=True)
 
     class Meta:
-        ordering = ['order', ]
+        ordering = ['order']
 
     def __unicode__(self):
         return u"%s - %s (%s)" % (self.board.title, self.title, self.order)
 
     def update_log(self, count, changed_at):
-        log, created = PhaseLog.objects.get_or_create(phase=self, date=changed_at)
+        log, created = PhaseLog.objects.get_or_create(phase=self,
+                                                      date=changed_at)
         log.count = count 
         log.save()
 

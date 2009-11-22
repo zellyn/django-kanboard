@@ -17,16 +17,9 @@ def update_phase_log(signal, sender, from_phase, to_phase, changed_at, **kwargs)
 
 def create_default_phases(sender, instance, created, **kwargs):
     if not created: return None
-
-    from kanboard.models import Phase
-    backlog = Phase(title="Backlog", board=instance, type=Phase.BACKLOG, order=0)
-    backlog.save()
-
-    done = Phase(title="Done", board=instance, type=Phase.DONE, order=2)
-    done.save()
-
-    archive = Phase(title="Archive", board=instance, type=Phase.ARCHIVE, order=3)
-    archive.save()
+    instance.phases.create(title="Backlog", status=Phase.UPCOMING, order=1)
+    instance.phases.create(title="Done", status=Phase.FINISHED, order=1)
+    instance.phases.create(title="Archive", type=Phase.FINISHED, order=2)
 
 def update_phase_order(sender, instance, created, **kwargs):
     from kanboard.models import Phase
