@@ -2,7 +2,7 @@ import datetime
 
 from django.db import models
 
-from kanboard.signals import create_default_phases, update_phase_order, phase_change, update_phase_log, create_phase_log
+from kanboard import signals
 
 class Card(models.Model):
     """
@@ -58,9 +58,9 @@ class Card(models.Model):
         self.phase = new_phase
         self.save()
         
-        phase_change.send(sender=self, from_phase=from_phase, to_phase=new_phase, changed_at=change_at)
+        signals.phase_change.send(sender=self, from_phase=from_phase, to_phase=new_phase, changed_at=change_at)
 
-phase_change.connect(update_phase_log)
+signals.phase_change.connect(signals.update_phase_log)
 
 class Board(models.Model):
     title = models.CharField(max_length=80)
@@ -96,7 +96,7 @@ class Board(models.Model):
         except Phase.DoesNotExist:
             return None
 
-models.signals.post_save.connect(create_default_phases, sender=Board)
+models.signals.post_save.connect(signals.create_default_phases, sender=Board)
 
     
 class Phase(models.Model):
@@ -135,8 +135,8 @@ class Phase(models.Model):
         log.count = count 
         log.save()
 
-models.signals.post_save.connect(update_phase_order, sender=Phase)
-models.signals.post_save.connect(create_phase_log, sender=Phase)
+models.signals.post_save.connect(signals.update_phase_order, sender=Phase)
+models.signals.post_save.connect(signals.create_phase_log, sender=Phase)
 
 class PhaseLog(models.Model):
     """
@@ -227,3 +227,4 @@ class KanboardStats(object):
         del result[archive.title]
 
         return result
+
