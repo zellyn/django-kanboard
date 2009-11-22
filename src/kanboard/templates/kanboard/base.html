@@ -2,9 +2,9 @@
 <html>
   <head>
   <title>{% block title %}Kanboard Test{% endblock %}</title>
-  <link rel="stylesheet" href="/kanboard/static/kanboard.css" type="text/css" media="all" />
-  <script type="text/javascript" src="/kanboard/static/js/jquery-1.3.2.min.js"></script>
-  <script type="text/javascript" src="/kanboard/static/js/jquery-ui-1.7.2.custom.min.js"></script>
+  <link rel="stylesheet" href="{{ STATIC_URL }}kanboard/kanboard.css" type="text/css" media="all" />
+  <script type="text/javascript" src="{{ STATIC_URL }}kanboard/js/jquery-1.3.2.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}kanboard/js/jquery-ui-1.7.2.custom.min.js"></script>
   <script type="text/javascript">
 {% include 'kanboard/main.js' %}
   </script>
