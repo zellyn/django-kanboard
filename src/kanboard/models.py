@@ -41,27 +41,31 @@ class Card(models.Model):
         or started to done it updates the appropriate
         timestamps.
         """
-        if not change_at: change_at = datetime.datetime.now()
+        if not change_at:
+            change_at = datetime.datetime.now()
 
-        if self.phase.type == Phase.BACKLOG and new_phase.type in (Phase.PROGRESS, Phase.DONE, Phase.ARCHIVE):
-            self.started_at = change_at
-
-        if new_phase.type in (Phase.DONE, Phase.ARCHIVE):
-            if not self.done_at: self.done_at = change_at
-
-        if new_phase.type == Phase.PROGRESS and self.done_at:
-            self.done_at == None
-
-        if new_phase.type == Phase.BACKLOG and self.started_at:
-            self.started_at == None
+        if self.phase.status == Phase.UPCOMING:
+            if new_phase.status in (Phase.PROGRESS, Phase.FINISHED):
+                self.started_at = change_at
+            elif new_phase.status == Phase.UPCOMING and self.started_at:
+                self.started_at == None
+        elif new_phase.status == Phase.FINISHED:
+            if not self.done_at:
+                self.done_at = change_at
+        elif new_phase.status == Phase.PROGRESS:
+            if self.done_at:
+                self.done_at == None
 
         from_phase = self.phase
         self.phase = new_phase
         self.save()
-        
-        signals.phase_change.send(sender=self, from_phase=from_phase, to_phase=new_phase, changed_at=change_at)
+
+        signals.phase_change.send(sender=self, from_phase=from_phase,
+                                  to_phase=new_phase, changed_at=change_at)
 
 signals.phase_change.connect(signals.update_phase_log)
+models.signals.pre_save.connect(signals.card_order, sender=Card)
+
 
 class Board(models.Model):
     title = models.CharField(max_length=80)
@@ -70,9 +74,16 @@ class Board(models.Model):
     #Optional fields
     description = models.TextField(blank=True)
 
+    def __unicode__(self):
+        return self.title
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return 'kanboard', [self.slug]
+
 models.signals.post_save.connect(signals.create_default_phases, sender=Board)
 
-    
+
 class Phase(models.Model):
     UPCOMING = 'upcoming'
     PROGRESS = 'progress'
@@ -105,7 +116,7 @@ class Phase(models.Model):
     def update_log(self, count, changed_at):
         log, created = PhaseLog.objects.get_or_create(phase=self,
                                                       date=changed_at)
-        log.count = count 
+        log.count = count
         log.save()
 
 models.signals.post_save.connect(signals.update_phase_order, sender=Phase)
@@ -140,8 +151,8 @@ class KanboardStats(object):
     def delta_from_done(self, attr_name, start=None, finish=None):
         now = datetime.datetime.now()
         if not finish: finish = now
-        
-        cards = Card.objects.filter(board = self.board, done_at__lte=finish)
+
+        cards = Card.objects.filter(board=self.board, done_at__lte=finish)
         if start:
             cards = cards.filter(done_at__gte=start)
 
@@ -183,7 +194,7 @@ class KanboardStats(object):
         Note: The done count equals Done + Archive
         """
         if date is None: date = datetime.date.today()
-        
+
         result = {}
         for phase in self.board.phases.all():
             try:

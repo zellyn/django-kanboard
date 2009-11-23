@@ -4,6 +4,14 @@
 
 <h1>Kanboard Test</h1>
 
+<form id="add_card" method="post" action="">
+{{ form.as_p }}
+<div>
+<input type="submit" value="Add as Upcoming" name="upcoming" />
+<input type="submit" value="Pin to Board" name="pin" />
+</div>
+</form>
+
 <div id="board">
   {% for phase in board.phases.all %}
   <div class="column">
