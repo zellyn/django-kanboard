@@ -1,5 +1,6 @@
-#board {
-  width: 1000px;
+html, body {
+	margin:0;
+	padding:0;
 }
 
 h2 {
@@ -14,15 +15,38 @@ h2 {
   
 }
 
-ul {
+#top {
+	margin:0;
+	padding:1em;
+}
+
+#bottom {
+	clear:both;
+	margin:0;
+	padding:.25em 0;
+	background:#f4f4f4;
+	height:3em;
+	overflow:auto;
+}
+
+#board {
+	overflow:auto;
+}
+
+#board h2 {
+	padding:0;
+	margin:0;
+}
+
+#board ul {
   padding-left: 0;
   background: #eeeeee;
   min-height: 3em;
-  padding-top: 1px;
-  padding-bottom: 1px;
+  margin:0;
+  padding:1px;
 }
 
-li {
+#board li {
   border: 1px black solid;
   background: white;
   padding: 3px;

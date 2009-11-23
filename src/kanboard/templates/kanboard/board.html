@@ -1,7 +1,7 @@
 {% extends 'kanboard/base.html' %}
 
 {% block body %}
-
+<div id="top">
 <h1>Kanboard Test</h1>
 
 <form id="add_card" method="post" action="">
@@ -11,7 +11,7 @@
 <input type="submit" value="Pin to Board" name="pin" />
 </div>
 </form>
-
+</div>
 <div id="board">
   {% for phase in board.phases.all %}
   <div class="column">
@@ -28,8 +28,9 @@
   {% endfor %}
 </div>
 
+<div id="bottom">
 <ul id="messages" style="clear:left;">
 </ul>
-
+</div>
 
 {% endblock body %}
