@@ -7,15 +7,18 @@ class Migration:
     
     def forwards(self, orm):
         
-        # Adding field 'Card.created_by'
-        db.add_column('kanboard_card', 'created_by', orm['kanboard.card:created_by'])
+        # Changing field 'Card.created_by'
+        # (to signature: django.db.models.fields.related.ForeignKey(to=orm['auth.User']))
+        orm.Card.objects.update(created_by=orm['auth.User'].objects.all()[0])
+        db.alter_column('kanboard_card', 'created_by_id', orm['kanboard.card:created_by'])
         
     
     
     def backwards(self, orm):
         
-        # Deleting field 'Card.created_by'
-        db.delete_column('kanboard_card', 'created_by_id')
+        # Changing field 'Card.created_by'
+        # (to signature: django.db.models.fields.related.ForeignKey(to=orm['auth.User'], null=True))
+        db.alter_column('kanboard_card', 'created_by_id', orm['kanboard.card:created_by'])
         
     
     
@@ -66,7 +69,7 @@ class Migration:
             'blocked_because': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'board': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'cards'", 'to': "orm['kanboard.Board']"}),
             'color': ('django.db.models.fields.CharField', [], {'max_length': '7', 'blank': 'True'}),
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'}),
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'done_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
