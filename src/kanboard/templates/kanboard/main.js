@@ -6,16 +6,15 @@
 //*/
 //*
 function resize_board() {
-//	alert($(window).height() + ' - ' + $('#top').height() + '-' + $('#bottom').height());
-	var height = $(window).height() - $('#top').height() - $('#bottom').height();
-	height = height > 200 ? height : 20;
+	var height = $(window).height() - $('#top').outerHeight() - $('#bottom').outerHeight();
+	height = height > 200 ? height : 200;
 	var width = $('#board').width();
 	var columns = $('#board .column').length;
 	var col_width = parseInt(width / columns);
 	var last_width = width - (col_width * (columns - 1)) - 18;
 	$('#board .column').each(function(i) {
-		var head_height = $('h2', this).height();
-		$('ul', this).height(height - head_height);
+		var head_height = $('h2', this).outerHeight();
+		$('ul', this).height(height - head_height - 2);  // -2 for the 2px of vertical padding on the ul
 		$(this).width(i == columns - 1 ? last_width : col_width);
 	});
 }
