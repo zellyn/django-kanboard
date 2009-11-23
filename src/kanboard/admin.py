@@ -1,19 +1,23 @@
-from kanboard.models import Board, Card, Phase
 from django.contrib import admin
+from kanboard import models
+
+
+class PhaseInline(admin.StackedInline):
+    model = models.Phase
+
 
 class BoardAdmin(admin.ModelAdmin):
     list_display = ('title', 'description',)
-    # list_filter = ('room', 'user', 'status')
-    # date_hierarchy = 'created_at'
     search_fields = ('title', 'description')
+    inlines = [PhaseInline]
+
 
 class CardAdmin(admin.ModelAdmin):
-    pass
+    def save_model(self, request, obj, form, change):
+        obj.created_by = request.user
+        obj.save()
 
-class PhaseAdmin(admin.ModelAdmin):
-    pass
 
-admin.site.register(Board, BoardAdmin)
-admin.site.register(Card, CardAdmin)
-admin.site.register(Phase, PhaseAdmin)
+admin.site.register(models.Board, BoardAdmin)
+admin.site.register(models.Card, CardAdmin)
 
